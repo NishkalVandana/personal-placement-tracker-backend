@@ -6,6 +6,7 @@ from routes.email_service import send_email
 from datetime import datetime, timedelta, timezone
 import secrets
 import hashlib
+import logging
 import os
 import hmac
 auth_bp=Blueprint("auth",__name__)
@@ -50,6 +51,7 @@ def register():
         upsert=True
     )
 
+    
     try:
         send_email(
             email,
@@ -58,8 +60,10 @@ def register():
             "It expires in 5 minutes."
         )
     except Exception:
+        logging.exception("Failed to send verification email")
         pending_registrations.delete_one({"email": email})
         return {"message": "Unable to send verification email"}, 502
+
 
     return {
         "message": "OTP sent successfully. Please verify your email."
