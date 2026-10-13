@@ -198,7 +198,7 @@ def check_reminders():
     today = datetime.now(IST).date()
     print(f"Checking reminders for {today.isoformat()}")
 
-    for user in users.find({"email_verified": True}):
+    for user in users.find({}):
         user_id = str(user["_id"])
 
         notifications = user.get("notifications") or {}

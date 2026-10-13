@@ -11,4 +11,3 @@ except Exception as e:
     print("MongoDB connection failed:", e)
 db = client["placement_tracker"]
 users=db["users"]
-pending_registrations = db["pending_registrations"]
