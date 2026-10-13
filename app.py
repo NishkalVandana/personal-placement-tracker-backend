@@ -50,17 +50,16 @@ if frontend_url:
 
 CORS(
     app,
+    
     resources={
         r"/*": {
-            "origins": allowed_origins,
-            "methods": [
-                "GET", "POST", "PUT", "DELETE", "OPTIONS"
-            ],
-            "allow_headers": [
-                "Authorization", "Content-Type"
-            ],
+            "origins": [
+                "https://personal-placement-tracker-frontend.vercel.app",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+            ]
         }
-    },
+        }
 )
 
 @app.route("/")
