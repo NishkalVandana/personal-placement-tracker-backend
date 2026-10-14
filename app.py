@@ -1,6 +1,7 @@
 
 import os
-
+import hmac
+from flask import request, jsonify
 from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
@@ -65,6 +66,37 @@ CORS(
 @app.route("/")
 def home():
     return "Flask server is working!"
+
+@app.route("/internal/cron/reminders", methods=["POST"])
+def run_scheduled_reminders():
+    expected_secret = os.getenv("REMINDER_CRON_SECRET")
+    provided_secret = request.headers.get("X-Cron-Secret", "")
+
+    if not expected_secret:
+        return jsonify({
+            "error": "Reminder cron is not configured"
+        }), 503
+
+    if not hmac.compare_digest(provided_secret, expected_secret):
+        return jsonify({
+            "error": "Unauthorized"
+        }), 401
+
+    try:
+        check_reminders()
+
+        return jsonify({
+            "success": True,
+            "message": "Reminder check completed"
+        }), 200
+
+    except Exception:
+        app.logger.exception("Scheduled reminder check failed")
+
+        return jsonify({
+            "success": False,
+            "error": "Reminder check failed"
+        }), 500
 
 
 # Keep the scheduler for local development.
